@@ -1,3 +1,5 @@
+const API_URL = "https://axionics-api.axionics.workers.dev";
+
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
