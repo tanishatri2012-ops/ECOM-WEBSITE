@@ -1,52 +1,127 @@
+/* =========================
+   CONFIG
+========================= */
+
+// 🔴 CHANGE THIS to your real Worker URL
 const API_URL = "https://axionics-api.axionics.workers.dev";
+
+/* =========================
+   HELPERS
+========================= */
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+function showError(msg) {
+  const box = $("error");
+  if (box) box.textContent = msg;
+}
+
+function clearError() {
+  const box = $("error");
+  if (box) box.textContent = "";
+}
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function signupFormHandler(e) {
+/* =========================
+   SIGNUP
+========================= */
+
+async function signupFormHandler(e) {
   e.preventDefault();
+  clearError();
 
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  const errorBox = document.getElementById("error");
-
-  errorBox.textContent = "";
+  const name = $("name").value.trim();
+  const email = $("email").value.trim();
+  const password = $("password").value;
 
   if (!name || !email || !password) {
-    errorBox.textContent = "All fields are required.";
+    showError("All fields are required.");
     return;
   }
 
   if (!validateEmail(email)) {
-    errorBox.textContent = "Please enter a valid email address.";
+    showError("Please enter a valid email address.");
     return;
   }
 
   if (password.length < 8) {
-    errorBox.textContent = "Password must be at least 8 characters.";
+    showError("Password must be at least 8 characters.");
     return;
   }
 
-  alert("Frontend validation passed. Backend will be connected next.");
+  try {
+    const res = await fetch(`${API_URL}/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || "Signup failed.");
+      return;
+    }
+
+    alert("Account created successfully. Please log in.");
+    window.location.href = "/auth/login/";
+
+  } catch (err) {
+    showError("Network error. Please try again.");
+  }
 }
 
-function loginFormHandler(e) {
+/* =========================
+   LOGIN (READY FOR NEXT STEP)
+========================= */
+
+async function loginFormHandler(e) {
   e.preventDefault();
+  clearError();
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  const errorBox = document.getElementById("error");
-
-  errorBox.textContent = "";
+  const email = $("email").value.trim();
+  const password = $("password").value;
 
   if (!email || !password) {
-    errorBox.textContent = "Email and password are required.";
+    showError("Email and password are required.");
     return;
   }
 
-  alert("Frontend validation passed. Backend will be connected next.");
+  try {
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // 🔑 session cookie
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || "Login failed.");
+      return;
+    }
+
+    window.location.href = "/account/";
+
+  } catch (err) {
+    showError("Network error. Please try again.");
+  }
+}
+
+/* =========================
+   LOGOUT (FUTURE USE)
+========================= */
+
+async function logout() {
+  await fetch(`${API_URL}/logout`, {
+    method: "POST",
+    credentials: "include"
+  });
+  window.location.href = "/";
 }
