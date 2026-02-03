@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login – Axionics</title>
+  <link rel="stylesheet" href="../auth.css">
+</head>
+<body>
 
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>Welcome Back</h1>
+    <p>Login to your Axionics account.</p>
+
+    <div id="error" class="error"></div>
+
+    <form onsubmit="loginFormHandler(event)">
+      <label>Email</label>
+      <input id="email" type="email" placeholder="you@example.com">
+
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Your password">
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="auth-footer">
+      Don’t have an account?
+      <a href="../signup/">Create one</a>
+    </div>
+  </div>
+</div>
+
+<script src="../auth.js"></script>
+</body>
+</html>
